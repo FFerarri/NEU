@@ -72,17 +72,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     (sel) => sel.querySelector(".variant-button.selected")?.textContent
                 );
 
-                const matchingVariant = productVariants.find(
-                    (variant) => variant.option1 === selectedValues[0] && variant.option2 === selectedValues[1]
-                );
+              const matchingVariant = productVariants.find((variant) => {
+    return variant.option1 === selectedValues[0] &&
+           (selectedValues[1] ? variant.option2 === selectedValues[1] : true);
+});
 
-                if (matchingVariant) {
-                    const selectElement = document.querySelector("select[name='id']");
-                    selectElement.value = matchingVariant.id;
-                    selectElement.dispatchEvent(new Event("change"));
-                } else {
-                    console.warn("Keine passende Variante gefunden");
-                }
+if (matchingVariant) {
+    const selectElement = document.querySelector("select[name='id']");
+    selectElement.value = matchingVariant.id;
+    selectElement.dispatchEvent(new Event("change"));
+} else {
+    console.error("Keine passende Variante gefunden. Bitte prüfen Sie die Optionen.");
+}
+
             });
 
             selector.appendChild(button);
@@ -554,18 +556,19 @@ PRODUCT.VARIANT.PICKER LIQUID:
               </span>
             {%- endif -%}
             <select
-              id="Option-{{ section.id }}-{{ forloop.index0 }}"
-              class="select__select"
-              name="options[{{ option.name | escape }}]"
-              form="{{ product_form_id }}"
-            >
-              {% render 'product-variant-options',
-                product: product,
-                option: option,
-                block: block,
-                picker_type: picker_type
-              %}
-            </select>
+  id="Option-{{ section.id }}-{{ forloop.index0 }}"
+  class="select__select variant-select"
+  name="options[{{ option.name | escape }}]"
+  form="{{ product_form_id }}"
+  onchange="document.querySelector('select[name=id]').dispatchEvent(new Event('change'));"
+>
+  {% render 'product-variant-options',
+    product: product,
+    option: option,
+    block: block,
+    picker_type: picker_type
+  %}
+</select>
             <span class="svg-wrapper">
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
@@ -692,10 +695,6 @@ if (!customElements.get('product-modal')) {
   );
 }
 
-
-
-
-MAIN PRODUCT LIQUID:
 
 
 
