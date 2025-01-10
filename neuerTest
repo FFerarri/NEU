@@ -1,4 +1,3 @@
-
 Cart drawer liquid:
 
 {% comment %}
@@ -118,25 +117,23 @@ Cart drawer liquid:
                       </th>
                     </tr>
                   </thead>
+document.addEventListener('DOMContentLoaded', function () {
+    const productForms = document.querySelectorAll('form[action*="/cart/add"]');
 
-                  <tbody role="rowgroup">
-                    {%- for item in cart.items -%}
-                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row">
-                        <td class="cart-item__media" role="cell" headers="CartDrawer-ColumnProductImage">
-                          {% if item.image %}
-                            {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
-                            <a href="{{ item.url }}" class="cart-item__link" tabindex="-1" aria-hidden="true"> </a>
-                            <img
-                              class="cart-item__image"
-                              src="{{ item.image | image_url: width: 300 }}"
-                              alt="{{ item.image.alt | escape }}"
-                              loading="lazy"
-                              width="150"
-                              height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
-                            >
-                          {% endif %}
-                        </td>
+    productForms.forEach(form => {
+        form.querySelectorAll('input[name^="option"]').forEach(input => {
+            input.addEventListener('change', function () {
+                const selectedVariantId = this.getAttribute('data-option-value-id');
+                const variantInputField = form.querySelector('[name="id"]');
 
+                // Korrektur: Variant-ID auch im Add-to-Cart aktualisieren
+                if (variantInputField && selectedVariantId) {
+                    variantInputField.value = selectedVariantId;
+                }
+            });
+        });
+    });
+});
                         <td class="cart-item__details" role="cell" headers="CartDrawer-ColumnProduct">
                           {%- if settings.show_vendor -%}
                             <p class="caption-with-letter-spacing light">{{ item.product.vendor }}</p>
